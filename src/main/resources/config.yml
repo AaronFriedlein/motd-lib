@@ -1,0 +1,18 @@
+# MotdPlugin Configuration
+# ---------------------------------------------------------------------------
+# type: How to select the MOTD. Currently supported values:
+#   random - Picks a random file from motds/, then a random entry within it.
+#   fixed  - Always uses the entry specified by fixed-file and fixed-index.
+type: random
+
+# fixed-file: The file (in motds/) to read from when type is "fixed".
+fixed-file: "default.yml"
+
+# fixed-index: The 0-based index of the entry within fixed-file to use.
+fixed-index: 0
+
+# default-image: Filename (inside the images/ directory) used as the server
+# icon when an entry does not specify its own image, or when its image cannot
+# be found. Set to "" to disable a fallback icon entirely.
+# Icons must be exactly 64x64 pixels in PNG or JPG format.
+default-image: "default.png"

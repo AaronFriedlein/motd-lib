@@ -1,0 +1,18 @@
+name: MotdLib
+version: '${version}'
+main: io.github.personal.motdlib.MotdLib
+api-version: '1.21'
+description: Manages server MOTD and icon from organized files with random selection.
+authors:
+  - aaronfriedlein
+
+commands:
+  motd:
+    description: Manage the MOTD plugin.
+    permission: motdlib.reload
+    usage: /motd reload
+
+permissions:
+  motdlib.reload:
+    description: Allows the player to reload MotdLib.
+    default: op

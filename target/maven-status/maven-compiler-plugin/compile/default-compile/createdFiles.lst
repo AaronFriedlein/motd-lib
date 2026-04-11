@@ -1,0 +1,5 @@
+io\github\personal\motdlib\model\MotdEntry.class
+io\github\personal\motdlib\commands\ReloadCommand.class
+io\github\personal\motdlib\MotdLib.class
+io\github\personal\motdlib\manager\MotdManager.class
+io\github\personal\motdlib\events\PingListener.class

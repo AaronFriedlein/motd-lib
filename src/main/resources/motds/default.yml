@@ -1,0 +1,23 @@
+# MotdPlugin – Example MOTD file
+# ---------------------------------------------------------------------------
+# Place as many .yml files as you like in this directory. The plugin will
+# randomly pick one file, then randomly pick one entry from that file.
+#
+# Each entry supports two fields:
+#   message  (required) – A MiniMessage-formatted MOTD string.
+#                         Supports gradients, colors, bold, italic, etc.
+#                         Use \n to insert a second line.
+#   image    (optional) – Filename of a 64x64 PNG or JPG in the images/
+#                         directory. Omit (or leave blank) to use the
+#                         default-image from config.yml.
+# ---------------------------------------------------------------------------
+
+motds:
+  - message: "<gradient:gold:yellow><bold>Welcome to the Server!</bold></gradient>\n<gray>Connect and have fun!"
+    image: "default.png"
+
+  - message: "<aqua><bold>My Awesome Server</bold></aqua>\n<white>Now with random MOTDs!"
+    image: "default.png"
+
+  - message: "<gradient:green:aqua>A fresh day, a fresh MOTD</gradient>\n<yellow>See you in-game!"
+    # No 'image' key – falls back to default-image in config.yml.
