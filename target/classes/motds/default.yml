@@ -15,9 +15,11 @@
 motds:
   - message: "<gradient:gold:yellow><bold>Welcome to the Server!</bold></gradient>\n<gray>Connect and have fun!"
     image: "default.png"
+    id: "default"
 
   - message: "<aqua><bold>My Awesome Server</bold></aqua>\n<white>Now with random MOTDs!"
     image: "default.png"
+    id: "default2"
 
   - message: "<gradient:green:aqua>A fresh day, a fresh MOTD</gradient>\n<yellow>See you in-game!"
     # No 'image' key – falls back to default-image in config.yml.

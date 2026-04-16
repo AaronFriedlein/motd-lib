@@ -12,17 +12,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Handles the {@code /motd reload} command, which reloads {@code config.yml}
- * and all MOTD files and images from disk.
+ * Root executor for the {@code /motd} command. Dispatches to subcommand
+ * handlers based on {@code args[0]}:
+ * <ul>
+ *   <li>{@code /motd reload} – reloads config and all MOTD files from disk.</li>
+ *   <li>{@code /motd set <random|id|date> [id]} – updates the active fixed MOTD at runtime.</li>
+ * </ul>
  */
 public final class ReloadCommand implements CommandExecutor, TabCompleter {
 
     private static final MiniMessage MINI = MiniMessage.miniMessage();
 
     private final MotdLib plugin;
+    private final SetMotdCommand setMotdCommand;
 
     public ReloadCommand(MotdLib plugin) {
         this.plugin = plugin;
+        this.setMotdCommand = new SetMotdCommand(plugin);
     }
 
     @Override
@@ -31,22 +37,28 @@ public final class ReloadCommand implements CommandExecutor, TabCompleter {
                              @NotNull String label,
                              @NotNull String[] args) {
 
-        if (!sender.hasPermission("motdlib.reload")) {
+        if (args.length == 0) {
             sender.sendMessage(MINI.deserialize(
-                    "<red>You do not have permission to use this command."));
+                    "<yellow>Usage: <white>/" + label + " <reload|set>"));
             return true;
         }
 
-        if (args.length == 0 || !args[0].equalsIgnoreCase("reload")) {
-            sender.sendMessage(MINI.deserialize(
-                    "<yellow>Usage: <white>/" + label + " reload"));
-            return true;
+        switch (args[0].toLowerCase()) {
+            case "reload" -> {
+                if (!sender.hasPermission("motdlib.reload")) {
+                    sender.sendMessage(MINI.deserialize(
+                            "<red>You do not have permission to use this command."));
+                    return true;
+                }
+                plugin.reloadConfig();
+                plugin.getMotdManager().reload();
+                sender.sendMessage(MINI.deserialize(
+                        "<green>MotdLib reloaded successfully."));
+            }
+            case "set" -> setMotdCommand.handle(sender, label, args);
+            default -> sender.sendMessage(MINI.deserialize(
+                    "<yellow>Usage: <white>/" + label + " <reload|set>"));
         }
-
-        plugin.reloadConfig();
-        plugin.getMotdManager().reload();
-        sender.sendMessage(MINI.deserialize(
-                "<green>MotdLib reloaded successfully."));
         return true;
     }
 
@@ -56,7 +68,10 @@ public final class ReloadCommand implements CommandExecutor, TabCompleter {
                                                 @NotNull String label,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return List.of("reload");
+            return List.of("reload", "set");
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
+            return List.of("random", "id", "date");
         }
         return List.of();
     }

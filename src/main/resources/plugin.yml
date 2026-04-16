@@ -9,10 +9,12 @@ authors:
 commands:
   motd:
     description: Manage the MOTD plugin.
-    permission: motdlib.reload
-    usage: /motd reload
+    usage: /motd <reload|set>
 
 permissions:
   motdlib.reload:
     description: Allows the player to reload MotdLib.
+    default: op
+  motdlib.set:
+    description: Allows the player to update the active fixed MOTD at runtime.
     default: op

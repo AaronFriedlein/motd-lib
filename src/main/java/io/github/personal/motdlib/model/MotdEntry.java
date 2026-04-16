@@ -12,10 +12,12 @@ public final class MotdEntry {
 
     private final @NotNull String message;
     private final @Nullable String image;
+    private final @Nullable String id;
 
-    public MotdEntry(@NotNull String message, @Nullable String image) {
+    public MotdEntry(@NotNull String message, @Nullable String image, @Nullable String id) {
         this.message = message;
         this.image = image;
+        this.id = id;
     }
 
     /** Returns the MiniMessage-formatted MOTD string. */
@@ -31,5 +33,13 @@ public final class MotdEntry {
     @Nullable
     public String getImage() {
         return image;
+    }
+
+    /**
+     * Returns the optional unique ID for this entry, or {@code null} if none was specified.
+     */
+    @Nullable
+    public String getId() {
+        return id;
     }
 }

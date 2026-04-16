@@ -41,6 +41,13 @@ public final class MotdManager {
 
     private volatile @Nullable BufferedImage defaultImage;
 
+    /**
+     * Runtime override for the fixed entry set via {@code /motd set}.
+     * Takes precedence over the config file/index values when non-null.
+     * Cleared on {@link #reload()}.
+     */
+    private volatile @Nullable MotdEntry fixedEntryOverride;
+
     public MotdManager(@NotNull MotdLib plugin) {
         this.plugin = plugin;
         this.log = plugin.getLogger();
@@ -60,9 +67,10 @@ public final class MotdManager {
         BufferedImage newDefault = loadDefaultImage(newImageCache);
 
         // Swap atomically so the event thread always sees a consistent snapshot.
-        motdFiles    = Collections.unmodifiableMap(newMotdFiles);
-        imageCache   = Collections.unmodifiableMap(newImageCache);
-        defaultImage = newDefault;
+        motdFiles          = Collections.unmodifiableMap(newMotdFiles);
+        imageCache         = Collections.unmodifiableMap(newImageCache);
+        defaultImage       = newDefault;
+        fixedEntryOverride = null;
 
         log.info("Loaded " + motdFiles.size() + " MOTD file(s) with "
                 + motdFiles.values().stream().mapToInt(List::size).sum() + " total entries.");
@@ -87,12 +95,16 @@ public final class MotdManager {
 
     /**
      * Returns the {@link MotdEntry} at the fixed position specified in config
-     * ({@code fixed-file} / {@code fixed-index}).
+     * ({@code fixed-file} / {@code fixed-index}), unless a runtime override has
+     * been set via {@link #setFixedEntry(MotdEntry)} in which case that is returned.
      *
      * @return the fixed entry, or {@code null} if the configured file/index is invalid.
      */
     @Nullable
     public MotdEntry getFixedEntry() {
+        MotdEntry override = fixedEntryOverride;
+        if (override != null) return override;
+
         String fixedFile  = plugin.getConfig().getString("fixed-file", "default.yml");
         int    fixedIndex = plugin.getConfig().getInt("fixed-index", 0);
 
@@ -108,6 +120,34 @@ public final class MotdManager {
             return null;
         }
         return entries.get(fixedIndex);
+    }
+
+    /**
+     * Overrides the fixed entry at runtime. The override persists until the next
+     * {@link #reload()} call. Only meaningful when {@code type: fixed} is set in
+     * config.
+     *
+     * @param entry the entry to use as the fixed MOTD.
+     */
+    public void setFixedEntry(@NotNull MotdEntry entry) {
+        this.fixedEntryOverride = entry;
+    }
+
+    /**
+     * Searches all loaded MOTD entries for one whose {@code id} field matches
+     * the given value (case-sensitive).
+     *
+     * @param id the ID to search for.
+     * @return the matching entry, or {@code null} if none is found.
+     */
+    @Nullable
+    public MotdEntry getEntryById(@NotNull String id) {
+        for (List<MotdEntry> entries : motdFiles.values()) {
+            for (MotdEntry entry : entries) {
+                if (id.equals(entry.getId())) return entry;
+            }
+        }
+        return null;
     }
 
     /**
@@ -173,7 +213,9 @@ public final class MotdManager {
             }
             Object imgObj = raw.get("image");
             String image  = (imgObj instanceof String s && !s.isBlank()) ? s : null;
-            entries.add(new MotdEntry(message, image));
+            Object idObj  = raw.get("id");
+            String id     = (idObj instanceof String sid && !sid.isBlank()) ? sid : null;
+            entries.add(new MotdEntry(message, image, id));
         }
         return entries;
     }
