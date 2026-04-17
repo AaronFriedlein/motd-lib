@@ -39,7 +39,7 @@ public final class ReloadCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 0) {
             sender.sendMessage(MINI.deserialize(
-                    "<yellow>Usage: <white>/" + label + " <reload|set>"));
+                    "<yellow>Usage: <white>/" + label + " <reload|set|current>"));
             return true;
         }
 
@@ -56,8 +56,9 @@ public final class ReloadCommand implements CommandExecutor, TabCompleter {
                         "<green>MotdLib reloaded successfully."));
             }
             case "set" -> setMotdCommand.handle(sender, label, args);
+            case "current" -> new CurrentMotdCommand(plugin).handle(sender, label, args);
             default -> sender.sendMessage(MINI.deserialize(
-                    "<yellow>Usage: <white>/" + label + " <reload|set>"));
+                    "<yellow>Usage: <white>/" + label + " <reload|set|current>"));
         }
         return true;
     }
@@ -68,7 +69,7 @@ public final class ReloadCommand implements CommandExecutor, TabCompleter {
                                                 @NotNull String label,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return List.of("reload", "set");
+            return List.of("reload", "set", "current");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
             return List.of("random", "id", "date");

@@ -1,4 +1,5 @@
 io\github\personal\motdlib\commands\SetMotdCommand.class
+io\github\personal\motdlib\commands\CurrentMotdCommand.class
 io\github\personal\motdlib\model\MotdEntry.class
 io\github\personal\motdlib\commands\ReloadCommand.class
 io\github\personal\motdlib\MotdLib.class
